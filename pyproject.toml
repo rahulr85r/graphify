@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graphify-db"
+version = "0.1.0"
+description = "Turn a relational database into a graph you can actually read, including ones with no declared foreign keys."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Rahul R" }]
+keywords = ["database", "graph", "schema", "visualisation", "sql", "data-discovery"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Database",
+  "Topic :: Scientific/Engineering :: Visualization",
+]
+dependencies = []
+
+[project.optional-dependencies]
+live = ["sqlalchemy>=2.0"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+graphify = "graphify.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/rahulr85r/graphify"
+Issues = "https://github.com/rahulr85r/graphify/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+graphify = ["server/web/*"]
