@@ -77,3 +77,9 @@ def test_an_unknown_path_is_a_clean_404():
             assert exc.code == 404
     finally:
         httpd.shutdown(); httpd.server_close(); src.close()
+
+
+def test_the_bundled_example_can_be_found():
+    """`graphify demo` has to work without the user finding a file first."""
+    from graphify.cli import _bundled_example
+    assert os.path.exists(_bundled_example())

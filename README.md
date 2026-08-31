@@ -5,7 +5,8 @@ the ones with no declared foreign keys.**
 
 ```bash
 pip install graphify-db
-graphify open extract.sql
+graphify demo                # see what it does, no file needed
+graphify open extract.sql    # then point it at yours
 ```
 
 That parses the dump, works out the graph hiding in it, writes down what it
@@ -122,6 +123,7 @@ than silently vanishing — an unexpanded pile is information, not an omission.
 ## Commands
 
 ```bash
+graphify demo                      # the bundled example, nothing to find
 graphify open extract.sql          # infer, then open the browser
 graphify serve extract.sql -p 9000 # same, without opening a browser
 graphify infer extract.sql         # write the model file and stop

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import tempfile
 import time
 
 from . import __version__
@@ -28,6 +29,16 @@ def _default_model_path(dump: str) -> str:
 
 def _step(label, detail=""):
     print(f"  {label}{(' — ' + detail) if detail else ''}", flush=True)
+
+
+def _bundled_example() -> str:
+    here = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    for candidate in (os.path.join(here, "examples", "card_platform.sql"),
+                      os.path.join(os.path.dirname(here), "examples", "card_platform.sql")):
+        if os.path.exists(candidate):
+            return candidate
+    sys.exit("graphify: the bundled example is not installed alongside this copy; "
+             "pass a .sql file instead")
 
 
 def _load(args):
@@ -82,6 +93,10 @@ def main(argv=None) -> int:
     p.add_argument("--version", action="version", version=f"graphify {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
 
+    demo = sub.add_parser("demo", help="open the bundled example, no file needed")
+    demo.add_argument("-p", "--port", type=int, default=8000)
+    demo.add_argument("--host", default="127.0.0.1")
+
     for name, help_text in [("open", "infer and open the browser"),
                             ("serve", "infer and serve, without opening a browser"),
                             ("infer", "write the model file and stop")]:
@@ -96,6 +111,12 @@ def main(argv=None) -> int:
             s.add_argument("--host", default="127.0.0.1")
 
     args = p.parse_args(argv)
+    if args.cmd == "demo":
+        # Nothing to install, nothing to find: the point is that somebody can
+        # see what this does before deciding whether to point it at their data.
+        args.source = _bundled_example()
+        args.model = os.path.join(tempfile.gettempdir(), "graphify-demo.yaml")
+        args.fresh = True
     source, model, model_path = _load(args)
 
     if args.cmd == "infer":
@@ -106,7 +127,7 @@ def main(argv=None) -> int:
           f"{len(index.edge_types)} relationship types")
 
     httpd, url = run_server(source, model, model_path, args.host, args.port,
-                            open_browser=(args.cmd == "open"))
+                            open_browser=(args.cmd in ("open", "demo")))
     print(f"\n  {url}\n  ctrl-c to stop")
     try:
         httpd.serve_forever()
